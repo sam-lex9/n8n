@@ -1,0 +1,24 @@
+# Start from an official n8n Docker image.
+# It's crucial to pick a specific stable version (e.g., 1.37.2) for stability.
+# Check Docker Hub (https://hub.docker.com/r/n8nio/n8n/tags) for available tags.
+FROM n8nio/n8n:1.101.2
+
+# Switch to root user to install system packages.
+# The official n8n image usually defaults to 'node' user, so we switch to root for apk.
+USER root
+
+# Install FFmpeg. Alpine Linux is often used for n8n base images, so 'apk' is the package manager.
+RUN apk add --no-cache ffmpeg
+
+# Switch back to the 'node' user (n8n's default user) for security best practices.
+# This ensures n8n runs with appropriate permissions.
+RUN chown -R node:node /home/node/.n8n
+USER node
+
+# Expose the default n8n port (usually 5678, but Render uses 10000).
+# This is often already in the base image, but it's good practice for clarity.
+EXPOSE 5678
+
+# Set the default command for the container.
+# This is also often in the base image, but ensures n8n starts correctly.
+CMD ["n8n", "start"]
